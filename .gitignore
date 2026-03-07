@@ -1,0 +1,3 @@
+# Ignore original large files
+index_rivex_pitchbook.html
+*.DS_Store

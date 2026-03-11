@@ -1,5 +1,23 @@
-# Ignore archived large source copies, not the live entrypoint
-*.DS_Store
+# macOS
+.DS_Store
 
-# Local Netlify folder
-.netlify
+# Dependencies
+node_modules/
+
+# Local Netlify state / caches
+.netlify/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local editor/system noise
+.vscode/
+.idea/

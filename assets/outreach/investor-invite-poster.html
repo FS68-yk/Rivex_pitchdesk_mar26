@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RIVEX Investor Invite Poster</title>
+  <style>
+    :root {
+      --bg: #031018;
+      --panel: rgba(7, 18, 24, 0.78);
+      --panel-strong: rgba(6, 15, 20, 0.92);
+      --line: rgba(255, 255, 255, 0.08);
+      --ink: #f4fbfd;
+      --muted: rgba(244, 251, 253, 0.72);
+      --soft: rgba(244, 251, 253, 0.52);
+      --accent: #12c4d8;
+      --accent-soft: rgba(18, 196, 216, 0.16);
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --font-sans: "SF Pro Display", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      --font-mono: "SFMono-Regular", "Roboto Mono", Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 16% 12%, rgba(18, 196, 216, 0.18), transparent 28%),
+        radial-gradient(circle at 82% 82%, rgba(18, 196, 216, 0.12), transparent 22%),
+        linear-gradient(145deg, #041018 0%, #071924 44%, #031018 100%);
+      color: var(--ink);
+      font-family: var(--font-sans);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .poster {
+      position: relative;
+      width: min(100%, 520px);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(5, 16, 23, 0.7), rgba(5, 16, 23, 0.92)),
+        url("../optimized_images/slide_image_01.jpg") center/cover no-repeat;
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .poster::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(4, 16, 24, 0.18), rgba(4, 16, 24, 0.84)),
+        linear-gradient(135deg, rgba(4, 16, 24, 0.1), rgba(4, 16, 24, 0.68));
+      z-index: -2;
+    }
+
+    .poster::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 70% 18%, rgba(18, 196, 216, 0.2), transparent 24%),
+        radial-gradient(circle at 50% 76%, rgba(18, 196, 216, 0.12), transparent 28%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .content {
+      display: grid;
+      gap: 22px;
+      padding: 26px;
+    }
+
+    .top {
+      display: grid;
+      gap: 14px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.36em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      color: rgba(244, 251, 253, 0.66);
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(44px, 10vw, 68px);
+      line-height: 0.92;
+      letter-spacing: -0.05em;
+    }
+
+    h1 .accent {
+      color: var(--accent);
+    }
+
+    .subhead {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .subhead strong {
+      font-size: 22px;
+      line-height: 1.15;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .subhead span {
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .qr-card {
+      display: grid;
+      gap: 18px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(8, 20, 27, 0.82), rgba(6, 15, 20, 0.94));
+      backdrop-filter: blur(16px);
+    }
+
+    .scan-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .scan-title {
+      margin: 0;
+      display: grid;
+      gap: 6px;
+    }
+
+    .scan-title strong {
+      font-size: 36px;
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+    }
+
+    .scan-title span {
+      font-size: 17px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .qr-wrap {
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #ffffff, #e6f1f4);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+
+    .qr-wrap img {
+      display: block;
+      width: min(100%, 280px);
+      height: auto;
+      border-radius: 12px;
+    }
+
+    .cta {
+      display: grid;
+      gap: 4px;
+      text-align: center;
+    }
+
+    .cta strong {
+      font-size: 24px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .cta span {
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .meta {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meta-box {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .meta-label {
+      display: block;
+      margin-bottom: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(244, 251, 253, 0.54);
+    }
+
+    .meta-value {
+      font-size: 18px;
+      line-height: 1.45;
+      color: var(--ink);
+      word-break: break-word;
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+
+    .footer {
+      display: grid;
+      gap: 10px;
+      padding: 18px 20px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .footer strong {
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+    }
+
+    .footer span {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--soft);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(244, 251, 253, 0.82);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    @media (min-width: 700px) {
+      body {
+        padding: 28px;
+      }
+
+      .poster {
+        width: min(100%, 980px);
+      }
+
+      .content {
+        grid-template-columns: 1.04fr 0.96fr;
+        gap: 28px;
+        padding: 34px;
+      }
+
+      .top {
+        gap: 16px;
+      }
+
+      .qr-card {
+        align-self: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="poster">
+    <section class="content">
+      <div class="top">
+        <div class="brand">RIVEX</div>
+        <p class="eyebrow">Private Investor Access</p>
+        <h1>掃碼開啟<br /><span class="accent">RIVEX</span> 投資人入口</h1>
+        <p class="subhead">
+          <strong>收藏品金融基建白皮書</strong>
+          <span>Scan to access the RIVEX investor whitepaper.</span>
+        </p>
+        <div class="chips">
+          <span class="chip">Investor Access</span>
+          <span class="chip">Whitepaper</span>
+          <span class="chip">RIVEX</span>
+        </div>
+        <div class="footer">
+          <strong>查看市場機會、產品架構與流動性方案</strong>
+          <span>Explore the market thesis, product stack, and liquidity model in one private entry.</span>
+        </div>
+      </div>
+
+      <aside class="qr-card">
+        <div class="scan-tag">Scan Now</div>
+        <p class="scan-title">
+          <strong>立即掃碼</strong>
+          <span>Scan to view the whitepaper and investor deck.</span>
+        </p>
+
+        <div class="qr-wrap">
+          <img src="./rivex-fund-qr.png" alt="RIVEX QR code" />
+        </div>
+
+        <div class="cta">
+          <strong>RIVEX 項目白皮書</strong>
+          <span>Private investor access to the RIVEX whitepaper.</span>
+        </div>
+
+        <div class="meta">
+          <div class="meta-box">
+            <span class="meta-label">Link</span>
+            <div class="meta-value mono">https://rivex.fund</div>
+          </div>
+
+          <div class="meta-box">
+            <span class="meta-label">Access Code</span>
+            <div class="meta-value">Access code will be provided separately.<br />邀請碼將由發送方另行提供。</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

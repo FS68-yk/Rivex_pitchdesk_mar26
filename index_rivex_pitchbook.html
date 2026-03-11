@@ -179,6 +179,24 @@
     #page-counter { font-size: 10px; color: rgba(255,255,255,0.35); font-family: 'Space Mono', monospace; min-width: 44px; text-align: center; }
     #slide-title-bar { font-size: 10px; color: rgba(255,255,255,0.25); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     @media (max-width: 480px) { #slide-title-bar { display: none; } }
+    @media (max-width: 768px) {
+      #controls {
+        bottom: 8px;
+        padding: 6px 10px;
+        gap: 2px;
+        min-height: 38px;
+        max-width: calc(100vw - 16px);
+        border-radius: 18px;
+      }
+      .ctrl-btn {
+        min-width: 30px;
+        min-height: 30px;
+        font-size: 14px;
+        padding: 2px 6px;
+      }
+      #page-counter { min-width: 40px; font-size: 10px; }
+      #key-hint { display: none; }
+    }
 
     /* ── PROGRESS ── */
     #progress-line {
@@ -7680,44 +7698,55 @@ let _baseScale = 1, _userScale = 1, _pinchDist0 = 0;
 // Pan offset (in screen pixels) — only active when zoomed in
 let _panX = 0, _panY = 0;
 
-function _clampPan(scale) {
-  // Clamp pan so slide edges don't go past viewport
-  const W = 1280, H = 720;
-  const vw = window.innerWidth;
+function isMobileViewport() {
+  return window.innerWidth <= 768;
+}
+function defaultUserScale() {
+  return isMobileViewport() ? 1.9 : 1;
+}
+function viewportMetrics() {
   const ctrlEl = document.getElementById('controls');
   const ctrlH = ctrlEl ? ctrlEl.offsetHeight : 60;
-  const availH = window.innerHeight - ctrlH;
+  const mobile = isMobileViewport();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const safeX = mobile ? 8 : Math.max(16, Math.round(vw * 0.02));
+  const safeTop = mobile ? 8 : 14;
+  const safeBottom = mobile ? (ctrlH + 10) : (ctrlH + 20);
+  const availW = Math.max(220, vw - safeX * 2);
+  const availH = Math.max(200, vh - safeTop - safeBottom);
+  return { mobile, vw, vh, ctrlH, safeX, safeTop, safeBottom, availW, availH };
+}
+function _clampPan(scale) {
+  const W = 1280, H = 720;
+  const m = viewportMetrics();
   const scaledW = W * scale;
   const scaledH = H * scale;
-  // centered base position
-  const baseX = (vw - scaledW) / 2;
-  const baseY = Math.max(0, (availH - scaledH) / 2);
-  // max pan = how much the scaled slide exceeds the viewport
-  const maxPanX = Math.max(0, (scaledW - vw) / 2);
-  const maxPanY = Math.max(0, (scaledH - availH) / 2);
-  _panX = Math.max(-maxPanX, Math.min(maxPanX, _panX));
-  _panY = Math.max(-maxPanY, Math.min(maxPanY, _panY));
+  const minX = m.safeX + Math.min(0, m.availW - scaledW);
+  const maxX = m.safeX;
+  const minY = m.safeTop + Math.min(0, m.availH - scaledH);
+  const maxY = m.safeTop;
+  const baseX = Math.round((m.vw - scaledW) / 2);
+  const baseY = m.mobile ? m.safeTop : Math.round(m.safeTop + Math.max(0, (m.availH - scaledH) / 2));
+  const rawX = baseX + _panX;
+  const rawY = baseY + _panY;
+  const clampedX = Math.max(minX, Math.min(maxX, rawX));
+  const clampedY = Math.max(minY, Math.min(maxY, rawY));
+  _panX = clampedX - baseX;
+  _panY = clampedY - baseY;
 }
 
 function scaleStage(forceScale) {
   const W = 1280, H = 720;
-  const vw = window.innerWidth;
-  const fullVh = window.innerHeight;
-  const ctrlEl = document.getElementById('controls');
-  const ctrlH = ctrlEl ? ctrlEl.offsetHeight : 60;
-  const safeX = Math.max(16, Math.round(vw * 0.02));
-  const safeTop = 14;
-  const safeBottom = ctrlH + 20;
-  const availW = Math.max(320, vw - safeX * 2);
-  const availH = Math.max(240, fullVh - safeTop - safeBottom);
-  // Fit more conservatively so bottom-heavy slides don't get visually clipped
-  _baseScale = Math.min(availW / W, availH / H) * 0.985;
+  const m = viewportMetrics();
+  _baseScale = Math.min(m.availW / W, m.availH / H) * (m.mobile ? 0.995 : 0.985);
   const scale = (forceScale !== undefined) ? forceScale : (_baseScale * _userScale);
   const scaledW = W * scale;
   const scaledH = H * scale;
-  const baseOffsetX = Math.round((vw - scaledW) / 2);
-  const baseOffsetY = Math.round(safeTop + Math.max(0, (availH - scaledH) / 2));
-  if (_userScale <= 1.01) { _panX = 0; _panY = 0; }
+  const baseOffsetX = Math.round((m.vw - scaledW) / 2);
+  const mobileTop = 24;
+  const baseOffsetY = m.mobile ? mobileTop : Math.round(m.safeTop + Math.max(0, (m.availH - scaledH) / 2));
+  if (_userScale <= (m.mobile ? 1.08 : 1.01)) { _panX = 0; _panY = 0; }
   else _clampPan(scale);
   const offsetX = baseOffsetX + _panX;
   const offsetY = baseOffsetY + _panY;
@@ -7726,13 +7755,28 @@ function scaleStage(forceScale) {
   stage.style.position = 'absolute';
   stage.style.top = '0';
   stage.style.left = '0';
+  if (m.mobile) {
+    const controls = document.getElementById('controls');
+    if (controls) {
+      controls.style.bottom = 'auto';
+      controls.style.top = Math.min(m.vh - m.ctrlH - 8, Math.round(offsetY + scaledH + 10)) + 'px';
+    }
+  } else {
+    const controls = document.getElementById('controls');
+    if (controls) {
+      controls.style.top = '';
+      controls.style.bottom = '12px';
+    }
+  }
 }
 
 window.addEventListener('resize', () => {
-  // On orientation change, reset user zoom and refit
-  _userScale = 1;
+  _userScale = defaultUserScale();
+  _panX = 0;
+  _panY = 0;
   scaleStage();
 });
+_userScale = defaultUserScale();
 scaleStage();
 
 function goToSlide(n) {
@@ -7824,7 +7868,7 @@ document.addEventListener('touchmove', e => {
     const newUserScale = Math.max(0.3, Math.min(4.0, _pinchUserScaleStart * ratio));
     _userScale = newUserScale;
     scaleStage(_baseScale * newUserScale);
-  } else if (e.touches.length === 1 && !_isPinching && _userScale > 1.05) {
+  } else if (e.touches.length === 1 && !_isPinching && _userScale > (isMobileViewport() ? 1.01 : 1.05)) {
     // Zoomed in: single finger PANS the slide
     e.preventDefault();
     const dx = e.touches[0].clientX - tx;
@@ -7839,7 +7883,7 @@ document.addEventListener('touchend', e => {
   if (_isPinching && e.touches.length < 2) {
     _isPinching = false;
     _pinchDist0 = 0;
-  } else if (!_isPinching && _userScale <= 1.05) {
+  } else if (!_isPinching && _userScale <= (isMobileViewport() ? 1.08 : 1.05)) {
     // Only switch slides when NOT zoomed in
     const dx = e.changedTouches[0].clientX - tx;
     const dy = e.changedTouches[0].clientY - ty;
@@ -7855,7 +7899,7 @@ document.addEventListener('touchend', e => {
   if (e.touches.length > 0) return;
   const now = Date.now();
   if (now - _lastTap < 300) {
-    _userScale = 1;
+    _userScale = defaultUserScale();
     _panX = 0;
     _panY = 0;
     scaleStage();

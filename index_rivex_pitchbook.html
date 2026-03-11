@@ -7705,16 +7705,18 @@ function scaleStage(forceScale) {
   const fullVh = window.innerHeight;
   const ctrlEl = document.getElementById('controls');
   const ctrlH = ctrlEl ? ctrlEl.offsetHeight : 60;
-  const availH = fullVh - ctrlH;
-  // Always fit-to-screen: show entire slide by default
-  // User can pinch to zoom in for detail
-  _baseScale = Math.min(vw / W, availH / H);
+  const safeX = Math.max(16, Math.round(vw * 0.02));
+  const safeTop = 14;
+  const safeBottom = ctrlH + 20;
+  const availW = Math.max(320, vw - safeX * 2);
+  const availH = Math.max(240, fullVh - safeTop - safeBottom);
+  // Fit more conservatively so bottom-heavy slides don't get visually clipped
+  _baseScale = Math.min(availW / W, availH / H) * 0.985;
   const scale = (forceScale !== undefined) ? forceScale : (_baseScale * _userScale);
   const scaledW = W * scale;
   const scaledH = H * scale;
-  const baseOffsetX = (vw - scaledW) / 2;
-  const baseOffsetY = Math.max(0, (availH - scaledH) / 2);
-  // When not zoomed, reset pan
+  const baseOffsetX = Math.round((vw - scaledW) / 2);
+  const baseOffsetY = Math.round(safeTop + Math.max(0, (availH - scaledH) / 2));
   if (_userScale <= 1.01) { _panX = 0; _panY = 0; }
   else _clampPan(scale);
   const offsetX = baseOffsetX + _panX;
@@ -7724,7 +7726,6 @@ function scaleStage(forceScale) {
   stage.style.position = 'absolute';
   stage.style.top = '0';
   stage.style.left = '0';
-  // (orientation hint is managed separately, not on every scale call)
 }
 
 window.addEventListener('resize', () => {
@@ -7747,7 +7748,11 @@ function goToSlide(n) {
   // Hide prev slide
   if (prevEl) {
     prevEl.classList.remove('active');
-    setTimeout(() => { prevEl.style.display = 'none'; }, 450);
+    setTimeout(() => {
+      prevEl.style.display = 'none';
+      prevEl.style.opacity = '';
+      prevEl.style.visibility = '';
+    }, 220);
   }
   // Init charts/content for this slide
   const slideId = SLIDES[n-1].id;

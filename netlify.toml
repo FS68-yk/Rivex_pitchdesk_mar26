@@ -1,5 +1,34 @@
 [build]
   publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  included_files = ["assets/**", "index_rivex_pitchbook.html"]
 
 [build.processing]
   skip_processing = true
+
+[[redirects]]
+  from = "/deck"
+  to = "/.netlify/functions/deck"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/.netlify/functions/admin"
+  status = 200
+
+[[redirects]]
+  from = "/protected-assets/*"
+  to = "/.netlify/functions/assets"
+  status = 200
+
+[[redirects]]
+  from = "/logout"
+  to = "/.netlify/functions/logout"
+  status = 200
+
+[[redirects]]
+  from = "/admin-logout"
+  to = "/.netlify/functions/admin-logout"
+  status = 200
